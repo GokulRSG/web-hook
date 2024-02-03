@@ -36,21 +36,19 @@ app.get('/webhook', function (req, res) {
 })
 
 
-// Endpoint to handle incoming messages from Facebook Messenger
-app.post('/webhook', (req, res) => {
-    const body = req.body;
+app.post('/webhook', (req, res)=>{
+    let bodyParam = req.body;
 
-    console.log("Get method working")
-    if (body.object === 'page') {
-      body.entry.forEach(entry => {
-        const webhookEvent = entry.messaging[0];
-        console.log(webhookEvent);
+    console.log(JSON.stringify(bodyParam,null,2));
 
-        let phone_no_id = entry.challange[0].value.metadata.phone_number_id;
-        let from = entry.challange[0].value.messages[0].from;
-        let msgBody = entry.challange[0].value.messages[0].text.body;
-
-        // Process the webhookEvent here (e.g., send response messages)
+    if(bodyParam.object){
+       if(bodyParam.entry &&
+        bodyParam.entry[0].challange &&
+        bodyParam.entry[0].challange[0].value.messages && 
+        bodyParam.entry[0].challange[0].value.messages[0]){
+            let phone_no_id = body.entry[0].challange[0].value.metadata.phone_number_id;
+            let from = body.entry[0].challange[0].value.messages[0].from;
+            let msgBody = body.entry[0].challange[0].value.messages[0].text.body;
             axios({
                 method : "POST",
                 url : `https://graph.facebook.com/v18.0/${phone_no_id}/messages?access_token=${urltoken}`,
@@ -65,17 +63,12 @@ app.post('/webhook', (req, res) => {
                     "Content-Type": "application/json"
                 }
             });
-      });
-      res.status(200).send('EVENT_RECEIVED');
-    } else {
-      res.sendStatus(404);
+            res.send(200);
+        } else{
+            res.send(404);
+        }
     }
-  });
-
-
-
-
-
+});
 app.get('/', (req, res)=>{
     res.status(200).send("WebHook Stated....");
 });
@@ -85,21 +78,22 @@ app.get('/', (req, res)=>{
 
 
 
-// app.post('/webhook', (req, res)=>{
-//     let bodyParam = req.body;
-
-//     console.log(JSON.stringify(bodyParam,null,2));
-
-//     if(bodyParam.object){
-//        if(bodyParam.entry &&
-//         bodyParam.entry[0].challange &&
-//         bodyParam.entry[0].challange[0].value.messages && 
-//         bodyParam.entry[0].challange[0].value.messages[0]){
-//             let phone_no_id = body.entry[0].challange[0].value.metadata.phone_number_id;
-//             let from = body.entry[0].challange[0].value.messages[0].from;
-//             let msgBody = body.entry[0].challange[0].value.messages[0].text.body;
 
 
+// app.post('/webhook', (req, res) => {
+//     const body = req.body;
+
+//     console.log("Get method working")
+//     if (body.object === 'page') {
+//       body.entry.forEach(entry => {
+//         const webhookEvent = entry.messaging[0];
+//         console.log(webhookEvent);
+
+//         let phone_no_id = entry.challange[0].value.metadata.phone_number_id;
+//         let from = entry.challange[0].value.messages[0].from;
+//         let msgBody = entry.challange[0].value.messages[0].text.body;
+
+//         // Process the webhookEvent here (e.g., send response messages)
 //             axios({
 //                 method : "POST",
 //                 url : `https://graph.facebook.com/v18.0/${phone_no_id}/messages?access_token=${urltoken}`,
@@ -114,9 +108,9 @@ app.get('/', (req, res)=>{
 //                     "Content-Type": "application/json"
 //                 }
 //             });
-//             res.send(200);
-//         } else{
-//             res.send(404);
-//         }
+//       });
+//       res.status(200).send('EVENT_RECEIVED');
+//     } else {
+//       res.sendStatus(404);
 //     }
-// });
+//   });
