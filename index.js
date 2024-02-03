@@ -10,7 +10,7 @@ const urltoken = process.env.URLTOKEN;
 const mytoken = process.env.MYTOKEN;
 
 
-app.listen(3000 || process.env.PORT, ()=>{
+app.listen(process.env.PORT, ()=>{
     //res.send('Hello World');
     console.log("Application Listening")
 });
